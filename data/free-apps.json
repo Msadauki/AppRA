@@ -1,0 +1,47 @@
+[
+  {
+    "appId": "free001",
+    "name": "Super Fun Game",
+    "type": "Free",
+    "descriptionShort": "A super fun casual game",
+    "descriptionLong": "Explore exciting levels, collect coins, unlock characters, and have fun with friends.",
+    "howToUse": "Tap to start, swipe to move, collect coins, complete levels to unlock rewards.",
+    "category": "Games",
+    "subCategory": "Casual",
+    "downloads": 1200,
+    "rating": 4.5,
+    "clicks": 350,
+    "banners": ["assets/banners/free001-banner1.png", "assets/banners/free001-banner2.png"],
+    "icon": "assets/icons/free001-icon.png",
+    "screenshots": [
+      "assets/screenshots/free001-ss1.png",
+      "assets/screenshots/free001-ss2.png",
+      "assets/screenshots/free001-ss3.png"
+    ],
+    "videoPreview": "assets/videos/free001-preview.mp4",
+    "badge": "",
+    "engagementScore": 0
+  },
+  {
+    "appId": "free002",
+    "name": "Learn English Fast",
+    "type": "Free",
+    "descriptionShort": "Improve your English skills quickly",
+    "descriptionLong": "Interactive lessons, quizzes, and pronunciation guides to help you learn English fast.",
+    "howToUse": "Select lesson, complete exercises, track your progress.",
+    "category": "Education",
+    "subCategory": "Language",
+    "downloads": 850,
+    "rating": 4.7,
+    "clicks": 220,
+    "banners": ["assets/banners/free002-banner1.png"],
+    "icon": "assets/icons/free002-icon.png",
+    "screenshots": [
+      "assets/screenshots/free002-ss1.png",
+      "assets/screenshots/free002-ss2.png"
+    ],
+    "videoPreview": "assets/videos/free002-preview.mp4",
+    "badge": "",
+    "engagementScore": 0
+  }
+]

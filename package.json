@@ -1,0 +1,26 @@
+{
+  "name": "AppRaR-Backend",
+  "version": "1.0.0",
+  "description": "Backend for AppRaR Mobile-First App Store",
+  "main": "ai/ai.js",
+  "scripts": {
+    "start": "node ai/ai.js",
+    "ai-run": "node ai/ai.js",
+    "firebase-emulate": "firebase emulators:start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["AppStore", "AppRaR", "AI", "Firebase", "Payments", "Backend"],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.5.0",
+    "firebase-admin": "^11.12.0",
+    "firebase": "^11.11.0",
+    "node-fetch": "^3.4.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}

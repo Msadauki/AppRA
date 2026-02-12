@@ -1,0 +1,49 @@
+[
+  {
+    "appId": "premium001",
+    "name": "Pro Photo Editor",
+    "type": "Premium",
+    "descriptionShort": "Advanced photo editor",
+    "descriptionLong": "Edit photos like a pro with layers, filters, AI enhancements, and professional tools.",
+    "howToUse": "Upload image, apply filters, use layers, export in multiple formats.",
+    "category": "Apps",
+    "subCategory": "Photography",
+    "downloads": 500,
+    "rating": 4.8,
+    "clicks": 150,
+    "banners": ["assets/banners/premium001-banner1.png"],
+    "icon": "assets/icons/premium001-icon.png",
+    "screenshots": [
+      "assets/screenshots/premium001-ss1.png",
+      "assets/screenshots/premium001-ss2.png",
+      "assets/screenshots/premium001-ss3.png"
+    ],
+    "videoPreview": "assets/videos/premium001-preview.mp4",
+    "premiumDownloadId": "GOOGLE_DRIVE_FILE_ID_001",
+    "badge": "",
+    "engagementScore": 0
+  },
+  {
+    "appId": "premium002",
+    "name": "Fitness Tracker Pro",
+    "type": "Premium",
+    "descriptionShort": "Track your fitness goals",
+    "descriptionLong": "Monitor your exercises, heart rate, calories, and get personalized recommendations.",
+    "howToUse": "Set up profile, track daily activities, view analytics and progress.",
+    "category": "Apps",
+    "subCategory": "Health & Fitness",
+    "downloads": 300,
+    "rating": 4.9,
+    "clicks": 90,
+    "banners": ["assets/banners/premium002-banner1.png", "assets/banners/premium002-banner2.png"],
+    "icon": "assets/icons/premium002-icon.png",
+    "screenshots": [
+      "assets/screenshots/premium002-ss1.png",
+      "assets/screenshots/premium002-ss2.png"
+    ],
+    "videoPreview": "assets/videos/premium002-preview.mp4",
+    "premiumDownloadId": "GOOGLE_DRIVE_FILE_ID_002",
+    "badge": "",
+    "engagementScore": 0
+  }
+]
