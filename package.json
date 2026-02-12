@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["AppStore", "AppRaR", "AI", "Firebase", "Payments", "Backend"],
-  "author": "Your Name",
+  "author": "MAS SQUARE",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.5.0",
@@ -19,7 +19,7 @@
     "express": "^4.18.2",
     "firebase-admin": "^12.0.0",
     "firebase": "^10.6.0",
-    "node-fetch": "^3.4.0"
+    "node-fetch": "^3.3.2"
   },
   "engines": {
     "node": ">=18"
