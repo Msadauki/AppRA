@@ -1,59 +1,45 @@
 // firebase/premiumDB.js
-const admin = require('./firebaseConfig');
+const { admin, firebaseEnabled } = require('./firebaseConfig');
 const crypto = require('crypto');
-const aiEngagement = require('../ai/aiEngagement');
-const { fetchTransactions, confirmTransaction } = require('../payments/transactions');
 
-// Environment variables you must set:
-// process.env.PREMIUM_TOKEN_SECRET
-// process.env.BACKEND_URL
+let aiEngagement = null;
+let payments = null;
 
-/**
- * Generate a short-lived token for secure premium download
- * @param {string} appId 
- * @param {string} userId 
- * @param {number} expiresIn milliseconds, default 5 min
- * @returns {string} token
- */
-function generateDownloadToken(appId, userId, expiresIn = 5 * 60 * 1000) {
+// Optional modules
+try { aiEngagement = require('../ai/aiEngagement'); } catch(e) { console.warn("⚠ aiEngagement not found"); }
+try { payments = require('../payments/transactions'); } catch(e) { console.warn("⚠ payments module not found"); }
+
+// Environment variable needed for token generation
+const PREMIUM_TOKEN_SECRET = process.env.PREMIUM_TOKEN_SECRET || 'default_secret';
+
+/** Generate short-lived token */
+function generateDownloadToken(appId, userId, expiresIn = 5*60*1000) {
     const payload = `${appId}|${userId}|${Date.now() + expiresIn}`;
-    const token = crypto.createHmac('sha256', process.env.PREMIUM_TOKEN_SECRET)
-                        .update(payload)
-                        .digest('hex');
-    return `${token}.${Buffer.from(payload).toString('base64')}`;
+    const hash = crypto.createHmac('sha256', PREMIUM_TOKEN_SECRET).update(payload).digest('hex');
+    return `${hash}.${Buffer.from(payload).toString('base64')}`;
 }
 
-/**
- * Verify a download token
- * @param {string} token 
- * @returns {object|null} {appId, userId} if valid, null if invalid/expired
- */
+/** Verify token */
 function verifyDownloadToken(token) {
     try {
         const [hash, payloadBase64] = token.split('.');
-        const payload = Buffer.from(payloadBase64, 'base64').toString('utf-8');
+        const payload = Buffer.from(payloadBase64, 'base64').toString('utf8');
         const [appId, userId, expiresAt] = payload.split('|');
-        const expectedHash = crypto.createHmac('sha256', process.env.PREMIUM_TOKEN_SECRET)
-                                   .update(payload)
-                                   .digest('hex');
 
+        const expectedHash = crypto.createHmac('sha256', PREMIUM_TOKEN_SECRET).update(payload).digest('hex');
         if (hash !== expectedHash) return null;
         if (Date.now() > parseInt(expiresAt)) return null;
         return { appId, userId };
-    } catch (err) {
-        console.error("Token verification failed:", err);
+    } catch {
         return null;
     }
 }
 
-/**
- * Get premium app metadata from Firebase
- * @param {string} appId 
- */
+/** Get premium app metadata */
 async function getPremiumApp(appId) {
+    if (!firebaseEnabled) return null;
     try {
-        const ref = admin.database().ref(`premiumApps/${appId}`);
-        const snapshot = await ref.once('value');
+        const snapshot = await admin.database().ref(`premiumApps/${appId}`).once('value');
         return snapshot.val();
     } catch (err) {
         console.error("Error fetching premium app:", err);
@@ -61,75 +47,42 @@ async function getPremiumApp(appId) {
     }
 }
 
-/**
- * Create or update premium app metadata
- * @param {string} appId 
- * @param {object} appData 
- */
-async function setPremiumApp(appId, appData) {
-    try {
-        const ref = admin.database().ref(`premiumApps/${appId}`);
-        await ref.set(appData);
-        console.log(`Premium app ${appId} saved/updated.`);
-    } catch (err) {
-        console.error("Error setting premium app:", err);
-    }
-}
-
-/**
- * Generate a temporary secure download link for client
- * @param {string} appId 
- * @param {string} userId 
- * @returns {string|null} temporary link
- */
+/** Generate secure download link for premium */
 async function getPremiumDownloadLink(appId, userId) {
-    try {
-        const appData = await getPremiumApp(appId);
-        if (!appData || !appData.price) return null;
+    const appData = await getPremiumApp(appId);
+    if (!appData || !appData.price) return null;
 
-        // Optional: check if user paid for this app
-        const transactions = await fetchTransactions();
-        const userPaid = Object.values(transactions).some(t =>
+    let userPaid = true;
+    if (payments) {
+        const transactions = await payments.fetchTransactions();
+        userPaid = Object.values(transactions).some(t =>
             t.userId === userId && t.appId === appId && t.status === 'success'
         );
-        if (!userPaid) return null; // user cannot download without payment
-
-        // Generate short-lived token
-        const token = generateDownloadToken(appId, userId);
-
-        // Link to backend download endpoint
-        return `${process.env.BACKEND_URL}/download/premium?token=${token}`;
-    } catch (err) {
-        console.error("Error generating premium download link:", err);
-        return null;
     }
+
+    if (!userPaid) return null;
+    const token = generateDownloadToken(appId, userId);
+    return `${process.env.BACKEND_URL}/download/premium?token=${token}`;
 }
 
-/**
- * Handle actual download request
- * This should be used in your Express route
- * @param {string} token 
- * @returns {string|null} Google Drive link if valid, null if invalid
- */
+/** Handle premium download request */
 async function handlePremiumDownload(token) {
     const verified = verifyDownloadToken(token);
     if (!verified) return null;
 
-    const { appId, userId } = verified;
+    const { appId } = verified;
     const appData = await getPremiumApp(appId);
     if (!appData || !appData.premiumDownloadId) return null;
 
-    // Update AI engagement (downloads, badges, trending)
-    await aiEngagement.recordDownload(appId);
+    if (aiEngagement) await aiEngagement.recordDownload(appId);
 
-    // Return Google Drive direct link (hidden from client)
     return `https://drive.google.com/uc?export=download&id=${appData.premiumDownloadId}`;
 }
 
 module.exports = {
-    getPremiumApp,
-    setPremiumApp,
-    getPremiumDownloadLink,
+    generateDownloadToken,
     verifyDownloadToken,
+    getPremiumApp,
+    getPremiumDownloadLink,
     handlePremiumDownload
 };
