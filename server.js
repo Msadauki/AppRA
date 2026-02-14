@@ -2,13 +2,14 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 
-app.use(express.json());
+// Free download route
+const freeDownload = require('./Routes/download');
 
-const downloadRoutes = require('./Routes/download');
-app.use('/', downloadRoutes);
+// Premium download route
+const premiumDownload = require('./Routes/premiumDownload');
+
+app.use('/', freeDownload);
+app.use('/', premiumDownload);
 
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`AppRaR backend running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`AppRaR backend running on port ${PORT}`));
