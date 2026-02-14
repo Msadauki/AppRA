@@ -1,26 +1,50 @@
+// server.js
 const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+dotenv.config();
+
 const app = express();
-require('dotenv').config();
+const PORT = process.env.PORT || 10000;
 
-const PORT = process.env.PORT || 3000;
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Homepage
-app.get('/', (req, res) => {
-  res.send('Welcome to AppRaR backend! Use /download for free app.');
-});
+// Routes
+const premiumRouter = require('./Routes/premiumDownload');
 
 // Free download route
-const freeDownloadRoute = require('./Routes/download');
-app.use('/', freeDownloadRoute);
+app.get('/download', (req, res) => {
+  const userType = req.query.userType;
 
-// Premium route (safe)
-try {
-  const premiumRoute = require('./Routes/premiumDownload');
-  app.use('/', premiumRoute);
-} catch (err) {
-  console.warn('⚠ Premium route not loaded — continuing without it');
-}
+  if (userType === 'free') {
+    return res.json({
+      downloadUrl: "https://example.com/free-app.apk"
+    });
+  }
 
+  if (userType === 'premium') {
+    return res.status(400).json({
+      error: "Use /download/premium for premium downloads"
+    });
+  }
+
+  return res.status(400).json({
+    error: "Invalid user type"
+  });
+});
+
+// Premium download route
+app.use('/download/premium', premiumRouter);
+
+// Optional root endpoint
+app.get('/', (req, res) => {
+  res.send("🎉 AppRaR backend is running. Use /download for free or /download/premium for premium apps.");
+});
+
+// Start server
 app.listen(PORT, () => {
-  console.log(`AppRaR backend running on port ${PORT}`);
+  console.log(`⚡ AppRaR backend running on port ${PORT}`);
 });
