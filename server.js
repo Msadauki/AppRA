@@ -1,9 +1,9 @@
-const express = require('express');
+routes express = require('express');
 const app = express();
 require('dotenv').config();
 
 // Mount routes
-const downloadRoutes = require('./routes/download');
+const downloadRoutes = require('./Routes/download');
 app.use('/', downloadRoutes);
 
 const PORT = process.env.PORT || 3000;
